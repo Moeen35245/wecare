@@ -2,14 +2,20 @@ import styled from 'styled-components';
 import { MaxContainer, MobileContainer } from '../components/Container.styled';
 import { FiMail, FiKey, FiLogIn } from 'react-icons/fi';
 import { useRouter } from 'next/router';
+import { useState } from 'react';
+import axios from 'axios';
+import { hostName } from '../helper/configue';
+import nookies, { setCookie, destroyCookie } from 'nookies';
+
 const Container = styled.div`
+    min-height: 600px;
     height: 100%;
     width: 100%;
     color: #fff;
     padding: 10px;
     position: relative;
     background-color: red;
-    background: url('/auth.png') no-repeat;
+    background: url('/3.jpg') no-repeat;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -103,11 +109,36 @@ const Submit = styled.button`
 
 const Auth = () => {
     const router = useRouter();
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+
     const submitHandler = (e) => {
         e.preventDefault();
-        router.push('/onboard');
-    };
+        setIsLoading(true);
+        // console.log('clicked');
 
+        // router.push('/onboard');
+        axios
+            .post(
+                `${hostName}/users/login`,
+                { email: email, password: password },
+                { 'Content-Type': 'application/json' }
+            )
+            .then((res) => {
+                console.log(res.data.token);
+                if (res.status === 200) {
+                    destroyCookie(null, 'token');
+                    destroyCookie(null, 'email');
+                    setCookie(null, 'token', res.data.token);
+                    setCookie(null, 'email', email);
+                    router.push(`/onboard/${email}`);
+                }
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
     return (
         <MaxContainer>
             <MobileContainer>
@@ -118,18 +149,32 @@ const Auth = () => {
                                 <Label>Email</Label>
                                 <div className='input--group'>
                                     <FiMail className='icon' />
-                                    <Input placeholder='Email' type='email' />
+                                    <Input
+                                        onChange={(e) => {
+                                            setEmail(e.target.value);
+                                        }}
+                                        value={email}
+                                        placeholder='Email'
+                                        type='email'
+                                    />
                                 </div>
                             </div>
                             <div className='form--group'>
                                 <Label>Password</Label>
                                 <div className='input--group'>
                                     <FiKey className='icon' />
-                                    <Input placeholder='password' type='password' />
+                                    <Input
+                                        onChange={(e) => {
+                                            setPassword(e.target.value);
+                                        }}
+                                        value={password}
+                                        placeholder='password'
+                                        type='password'
+                                    />
                                 </div>
                             </div>
                             <Submit onClick={(e) => submitHandler(e)}>
-                                Login <FiLogIn className='icon' />
+                                Login {!isLoading && <FiLogIn className='icon' />}
                             </Submit>
                             {/* <div className='form--group'>
                                 <Label>Password Confirm</Label>

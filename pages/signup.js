@@ -1,16 +1,19 @@
 import styled from 'styled-components';
 import { MaxContainer, MobileContainer } from '../components/Container.styled';
-import { FiMail, FiKey, FiUserCheck } from 'react-icons/fi';
+import { FiMail, FiKey, FiUserCheck, FiCheckCircle, FiClipboard } from 'react-icons/fi';
 import { useRouter } from 'next/router';
-
+import { useState } from 'react';
+import axios from 'axios';
+import { hostName } from '../helper/configue';
 const Container = styled.div`
+    min-height: 630px;
     height: 100%;
     width: 100%;
     color: #fff;
     padding: 10px;
     position: relative;
     /* background-color: red; */
-    background: url('/auth.png') no-repeat center center;
+    background: url('/2.jpg') no-repeat center center;
     -webkit-background-size: cover;
     -moz-background-size: cover;
     -o-background-size: cover;
@@ -48,6 +51,7 @@ const LoginContainer = styled.div`
             top: 50%;
             transform: translateY(-50%);
             left: 3%;
+            color: #023047;
         }
     }
 `;
@@ -104,9 +108,50 @@ const Submit = styled.button`
 
 const Auth = () => {
     const router = useRouter();
+
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirm, setConfirm] = useState('');
+    const [otp, setOtp] = useState('');
+    const [isOtpSent, setIsOtpSent] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isVerifyLoading, setIsVerifyLoading] = useState(false);
+
     const submitHandler = (e) => {
+        setIsLoading(true);
+        console.log('clicked');
         e.preventDefault();
-        router.push('/onboard');
+        // router.push('/onboard');
+        if (password !== confirm) return;
+        axios
+            .post(
+                `${hostName}/users/signup`,
+                { email: email, password: password },
+                { 'Content-Type': 'application/json' }
+            )
+            .then((res) => {
+                if (res.status === 201) setIsOtpSent(true);
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
+
+    const verifyOtp = (e) => {
+        setIsVerifyLoading(true);
+        console.log('clicked');
+        e.preventDefault();
+        // router.push('/onboard');
+
+        axios
+            .post(`${hostName}/users/verify_otp`, { email: email, otp: otp }, { 'Content-Type': 'application/json' })
+            .then((res) => {
+                console.log(res);
+                if (res.status === 201) router.push('/login');
+            })
+            .finally(() => {
+                setIsLoading(false);
+            });
     };
 
     return (
@@ -114,32 +159,75 @@ const Auth = () => {
             <MobileContainer>
                 <Container>
                     <LoginContainer>
-                        <form className='form'>
-                            <div className='form--group'>
-                                <Label>Email</Label>
-                                <div className='input--group'>
-                                    <FiMail className='icon' />
-                                    <Input placeholder='email' type='email' />
+                        {isOtpSent ? (
+                            <form className='form'>
+                                <div className='form--group'>
+                                    <Label>Verify Otp</Label>
+                                    <div className='input--group'>
+                                        <FiClipboard className='icon' />
+                                        <Input
+                                            value={otp}
+                                            onChange={(e) => {
+                                                setOtp(e.target.value);
+                                            }}
+                                            placeholder='OTP'
+                                            type='text'
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className='form--group'>
-                                <Label>Password</Label>
-                                <div className='input--group'>
-                                    <FiKey className='icon' />
-                                    <Input placeholder='password' type='password' />
+                                <Submit onClick={(e) => verifyOtp(e)}>
+                                    Verify {!isVerifyLoading && <FiCheckCircle className='icon' />}
+                                </Submit>
+                            </form>
+                        ) : (
+                            <form className='form'>
+                                <div className='form--group'>
+                                    <Label>Email</Label>
+                                    <div className='input--group'>
+                                        <FiMail className='icon' />
+                                        <Input
+                                            value={email}
+                                            onChange={(e) => {
+                                                setEmail(e.target.value);
+                                            }}
+                                            placeholder='email'
+                                            type='email'
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <div className='form--group'>
-                                <Label>Confirm</Label>
-                                <div className='input--group'>
-                                    <FiKey className='icon' />
-                                    <Input placeholder='confirm' type='password' />
+                                <div className='form--group'>
+                                    <Label>Password</Label>
+                                    <div className='input--group'>
+                                        <FiKey className='icon' />
+                                        <Input
+                                            value={password}
+                                            onChange={(e) => {
+                                                setPassword(e.target.value);
+                                            }}
+                                            placeholder='password'
+                                            type='password'
+                                        />
+                                    </div>
                                 </div>
-                            </div>
-                            <Submit onClick={(e) => submitHandler(e)}>
-                                Sign Up <FiUserCheck className='icon' />
-                            </Submit>
-                        </form>
+                                <div className='form--group'>
+                                    <Label>Confirm</Label>
+                                    <div className='input--group'>
+                                        <FiKey className='icon' />
+                                        <Input
+                                            value={confirm}
+                                            onChange={(e) => {
+                                                setConfirm(e.target.value);
+                                            }}
+                                            placeholder='confirm'
+                                            type='password'
+                                        />
+                                    </div>
+                                </div>
+                                <Submit onClick={(e) => submitHandler(e)}>
+                                    Sign Up {!isLoading && <FiUserCheck className='icon' />}
+                                </Submit>
+                            </form>
+                        )}
                     </LoginContainer>
                 </Container>
             </MobileContainer>

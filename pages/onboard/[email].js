@@ -1,8 +1,11 @@
 import styled from 'styled-components';
-import { FlexContainer, MaxContainer, MobileContainer } from '../components/Container.styled';
+import { FlexContainer, MaxContainer, MobileContainer } from '../../components/Container.styled';
 import { useRouter } from 'next/router';
 import { FiCheck } from 'react-icons/fi';
 import { useState } from 'react';
+import axios from 'axios';
+import { hostName } from '../../helper/configue';
+import nookies from 'nookies';
 
 const LoginContainer = styled.div`
     padding: 30px;
@@ -109,6 +112,24 @@ const Submit = styled.button`
     }
 `;
 
+const Select = styled.select`
+    display: block;
+    height: 50px;
+    width: 100%;
+    /* background-color: rgba(255, 255, 255, 0.07); */
+    border-radius: 10px / 13px;
+    padding: 0 20px;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 300;
+    border: none;
+    outline: none;
+    font-weight: bold;
+    font-size: 14px;
+    color: #023047;
+    background-color: whitesmoke;
+`;
+
 // function isValidEmail(email) {
 //     const re = /^[a-zA-Z0-9+_.-]+@[a-zA-Z0-9.-]+$/;
 //     return re.test(String(email).toLowerCase());
@@ -128,6 +149,43 @@ const OnBoard = () => {
     const [address, setAddress] = useState('');
     const [gender, setGender] = useState('');
     const [DOB, setDOB] = useState('');
+    const [otp, setOtp] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const submitHandler = (e) => {
+        e.preventDefault();
+        setIsLoading(true);
+        const { email, token } = nookies.get();
+
+        axios
+            .post(
+                `${hostName}/users/add_user`,
+                {
+                    email: email,
+                    firstName: fName,
+                    lastName: lName,
+                    phone: phone,
+                    dob: DOB,
+                    gender: gender,
+                    address: address,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    'Content-Type': 'application/json',
+                }
+            )
+            .then((res) => {
+                console.log(res);
+                if (res.status === 201) {
+                    router.push('/patient/appointment/new');
+                }
+            })
+            .catch((err) => console.log('something went wrong', err))
+            .finally(() => {
+                setIsLoading(false);
+            });
+    };
 
     return (
         <MaxContainer>
@@ -197,14 +255,16 @@ const OnBoard = () => {
                                 <Label>Gender</Label>
                                 <div className='input--group'>
                                     {/* <FiMail className='icon' /> */}
-                                    <Input
-                                        value={gender}
+                                    <Select
+                                        defaultValue={'m'}
                                         onChange={(e) => {
                                             setGender(e.target.value);
                                         }}
-                                        placeholder='Gender'
-                                        type='text'
-                                    />
+                                    >
+                                        <option value={'m'}>Male</option>
+                                        <option value={'f'}>Female</option>
+                                        <option value={'o'}>Other</option>
+                                    </Select>
                                 </div>
                             </div>
                             <div className='form--group'>
@@ -226,7 +286,6 @@ const OnBoard = () => {
                         <div className='form--group'>
                             <Label>Address</Label>
                             <div className='input--group'>
-                                {/* <FiMail className='icon' /> */}
                                 <Textarea
                                     value={address}
                                     onChange={(e) => {
@@ -237,7 +296,7 @@ const OnBoard = () => {
                             </div>
                         </div>
                         <Submit onClick={(e) => submitHandler(e)}>
-                            Submit <FiCheck className='icon' />
+                            Submit {!isLoading && <FiCheck className='icon' />}
                         </Submit>
                     </form>
                 </LoginContainer>
@@ -247,3 +306,34 @@ const OnBoard = () => {
 };
 
 export default OnBoard;
+
+export async function getServerSideProps(context) {
+    const data = context.params;
+    const { token } = nookies.get(context);
+
+    const isNewData = await axios.post(
+        `${hostName}/users/is_new`,
+        { email: data.email },
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+            'Content-Type': 'application/json',
+        }
+    );
+
+    console.log(isNewData.data.isNew);
+
+    if (!isNewData.data.isNew)
+        return {
+            redirect: {
+                destination: '/patient/appointment/new',
+                permanent: false,
+            },
+            props: {},
+        };
+
+    return {
+        props: {},
+    };
+}

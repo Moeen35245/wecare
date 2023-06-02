@@ -4,7 +4,11 @@ import { useRouter } from 'next/router';
 // import Image from 'next/image';
 
 const Container = styled.div`
-    background-color: #1554f6;
+    background: url('/1.jpg') no-repeat center center;
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
     height: 100%;
     width: 100%;
     color: #fff;
@@ -13,6 +17,12 @@ const Container = styled.div`
 
     & h1 {
         text-align: center;
+        font-size: 60px;
+        z-index: 1;
+        position: absolute;
+        top: 35%;
+        left: 50%;
+        transform: translate(-50%, -50%);
     }
 
     & .img--container {
@@ -105,19 +115,34 @@ const Container = styled.div`
     }
 `;
 
+const Overlay = styled.div`
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 100%;
+    width: 100%;
+    /* filter: blur(4px); */
+    backdrop-filter: blur(2px);
+    background-color: rgba(0, 0, 0, 0.2);
+    z-index: 0;
+`;
+
 const Starting = () => {
     const router = useRouter();
     return (
         <MobileContainer>
             <Container>
+                <Overlay />
                 <h1>WeCare</h1>
-                <div className='img--container'>
+
+                {/* <div className='img--container'>
                     <img src='/main.png' alt='' />
-                </div>
+                </div> */}
                 <div className='footer'>
-                    <h4>More Comfortable Chat With Doctor</h4>
+                    <h4>We Care: Redefining Healthcare Access</h4>
                     <p>
-                        Book an appointment with doctor. Chat with doctor via appointment letter and get consultationt.
+                        Experience a new era of healthcare accessibility with We Care. Instantly book appointments at
+                        top-rated hospitals, putting your health first, always.
                     </p>
                     <div className='btn--container'>
                         <button onClick={(e) => router.push('/signup')} className='btn'>
