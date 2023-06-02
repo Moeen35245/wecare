@@ -82,7 +82,7 @@ const NewAppointment = () => {
                                                 <p>{item.desc}</p>
                                             </div>
                                             <div>
-                                                <img src={item.logo} />
+                                                <img alt='' src={item.logo} />
                                             </div>
                                         </FlexContainer>
                                     </HospitalDiv>

@@ -311,7 +311,7 @@ const BookAppointment = ({ name }) => {
                         </Popup>
                     )}
                     {isPopupOpen && <Overlay />}
-                    <img src={getImage(name)} />
+                    <img alt='' src={getImage(name)} />
                     <Submit onClick={(e) => setIsPopupOpen(true)}>
                         Book a new appointment <FiFilePlus className='icon' />
                     </Submit>

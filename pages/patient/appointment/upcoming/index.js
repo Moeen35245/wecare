@@ -140,7 +140,7 @@ const PopupModel = ({ data, setIsPopupOpen }) => {
                 <FiX className='icon' />
             </div>
             <div className='img--container'>
-                <img src={getImage(data.hospital)} />
+                <img alt='' src={getImage(data.hospital)} />
             </div>
             <div className='data--container'>
                 <p>
@@ -194,7 +194,7 @@ const UpComing = ({ data }) => {
                                             </p>
                                         </div>
                                         <div>
-                                            <img src={getImage(item.hospital)} alt='' />
+                                            <img alt='' src={getImage(item.hospital)} />
                                         </div>
                                     </FlexContainer>
                                 </AppointmentDiv>

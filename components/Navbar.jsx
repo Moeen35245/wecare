@@ -43,19 +43,19 @@ const Navbar = ({ active }) => {
             <Nav>
                 <FlexContainer justify='space-around'>
                     <div onClick={(e) => router.push('/patient/appointment/prev')} className=''>
-                        <img src='/prevA.png' />
+                        <img alt='' src='/prevA.png' />
                         {active === 'prev' && <div className='point active'></div>}
                     </div>
                     <div onClick={(e) => router.push('/patient/appointment/upcoming')} className=''>
-                        <img src='/upA.png' />
+                        <img alt='' src='/upA.png' />
                         {active === 'upcoming' && <div className='point active'></div>}
                     </div>
                     <div onClick={(e) => router.push('/patient/appointment/new')} className=''>
-                        <img src='/bookA.png' />
+                        <img alt='' src='/bookA.png' />
                         {active === 'new' && <div className='point active'></div>}
                     </div>
                     <div onClick={(e) => router.push('/patient/appointment/setting')} className=''>
-                        <img src='/setting.png' />
+                        <img alt='' src='/setting.png' />
                         {active === 'setting' && <div className='point active'></div>}
                     </div>
                 </FlexContainer>
