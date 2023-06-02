@@ -6,6 +6,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { hostName } from '../../helper/configue';
 import nookies from 'nookies';
+import Loader from '../../components/Loader';
 
 const LoginContainer = styled.div`
     padding: 30px;
@@ -295,8 +296,8 @@ const OnBoard = () => {
                                 />
                             </div>
                         </div>
-                        <Submit onClick={(e) => submitHandler(e)}>
-                            Submit {!isLoading && <FiCheck className='icon' />}
+                        <Submit disable={isLoading} onClick={(e) => submitHandler(e)}>
+                            {isLoading ? <Loader /> : 'Submit'}
                         </Submit>
                     </form>
                 </LoginContainer>

@@ -5,6 +5,7 @@ import { useRouter } from 'next/router';
 import { useState } from 'react';
 import axios from 'axios';
 import { hostName } from '../helper/configue';
+import Loader from '../components/Loader';
 const Container = styled.div`
     min-height: 630px;
     height: 100%;
@@ -175,8 +176,8 @@ const Auth = () => {
                                         />
                                     </div>
                                 </div>
-                                <Submit onClick={(e) => verifyOtp(e)}>
-                                    Verify {!isVerifyLoading && <FiCheckCircle className='icon' />}
+                                <Submit disable={isVerifyLoading} onClick={(e) => verifyOtp(e)}>
+                                    {isVerifyLoading ? <Loader /> : 'Verify'}
                                 </Submit>
                             </form>
                         ) : (
@@ -223,8 +224,8 @@ const Auth = () => {
                                         />
                                     </div>
                                 </div>
-                                <Submit onClick={(e) => submitHandler(e)}>
-                                    Sign Up {!isLoading && <FiUserCheck className='icon' />}
+                                <Submit disable={isLoading} onClick={(e) => submitHandler(e)}>
+                                    {isLoading ? <Loader /> : 'Submit'}
                                 </Submit>
                             </form>
                         )}

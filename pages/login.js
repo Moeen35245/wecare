@@ -6,6 +6,7 @@ import { useState } from 'react';
 import axios from 'axios';
 import { hostName } from '../helper/configue';
 import nookies, { setCookie, destroyCookie } from 'nookies';
+import Loader from '../components/Loader';
 
 const Container = styled.div`
     min-height: 600px;
@@ -173,8 +174,8 @@ const Auth = () => {
                                     />
                                 </div>
                             </div>
-                            <Submit onClick={(e) => submitHandler(e)}>
-                                Login {!isLoading && <FiLogIn className='icon' />}
+                            <Submit disable={isLoading} onClick={(e) => submitHandler(e)}>
+                                {isLoading ? <Loader /> : 'Submit'}
                             </Submit>
                             {/* <div className='form--group'>
                                 <Label>Password Confirm</Label>

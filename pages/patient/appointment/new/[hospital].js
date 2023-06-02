@@ -6,6 +6,7 @@ import Navbar from '../../../../components/Navbar';
 import { useState } from 'react';
 import axios from 'axios';
 import { hostName } from '../../../../helper/configue';
+import Loader from '../../../../components/Loader';
 
 const Container = styled.div`
     min-height: 100%;
@@ -306,7 +307,9 @@ const BookAppointment = ({ name }) => {
                                         />
                                     </div>
                                 </div>
-                                <SubmitForm onClick={(e) => submitHandler(e)}>Submit </SubmitForm>
+                                <SubmitForm disable={isLoading} onClick={(e) => submitHandler(e)}>
+                                    {isLoading ? <Loader /> : 'Submit'}{' '}
+                                </SubmitForm>
                             </form>
                         </Popup>
                     )}
