@@ -6,6 +6,10 @@ import { useState } from 'react';
 import axios from 'axios';
 import { hostName } from '../helper/configue';
 import Loader from '../components/Loader';
+import { toast } from 'react-toastify';
+import { toastConfig } from '../helper/toastify';
+import { checkValue } from '../helper/regex';
+
 const Container = styled.div`
     min-height: 630px;
     height: 100%;
@@ -119,11 +123,20 @@ const Auth = () => {
     const [isVerifyLoading, setIsVerifyLoading] = useState(false);
 
     const submitHandler = (e) => {
-        setIsLoading(true);
         console.log('clicked');
         e.preventDefault();
         // router.push('/onboard');
-        if (password !== confirm) return;
+        if (password !== confirm) {
+            toast.error('Password not match', toastConfig());
+            return;
+        }
+
+        if (password.length < 8) {
+            toast.error('min password length is 8', toastConfig());
+            return;
+        }
+
+        setIsLoading(true);
         axios
             .post(
                 `${hostName}/users/signup`,
@@ -131,8 +144,12 @@ const Auth = () => {
                 { 'Content-Type': 'application/json' }
             )
             .then((res) => {
-                if (res.status === 201) setIsOtpSent(true);
+                if (res.status === 201) {
+                    toast.success('OTP sent', toastConfig());
+                    setIsOtpSent(true);
+                }
             })
+            .catch((err) => toast.error('User Already exist', toastConfig()))
             .finally(() => {
                 setIsLoading(false);
             });
@@ -148,10 +165,14 @@ const Auth = () => {
             .post(`${hostName}/users/verify_otp`, { email: email, otp: otp }, { 'Content-Type': 'application/json' })
             .then((res) => {
                 console.log(res);
-                if (res.status === 201) router.push('/login');
+                if (res.status === 201) {
+                    toast.success('OTP verified', toastConfig());
+                    router.push('/login');
+                }
             })
+            .catch((err) => toast.error('Incorrect OTP', toastConfig()))
             .finally(() => {
-                setIsLoading(false);
+                setIsVerifyLoading(false);
             });
     };
 
@@ -169,7 +190,9 @@ const Auth = () => {
                                         <Input
                                             value={otp}
                                             onChange={(e) => {
-                                                setOtp(e.target.value);
+                                                if (checkValue(e.target.value, '^[0-9]*$')) {
+                                                    setOtp(e.target.value);
+                                                }
                                             }}
                                             placeholder='OTP'
                                             type='text'

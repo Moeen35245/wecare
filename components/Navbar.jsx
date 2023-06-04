@@ -54,7 +54,7 @@ const Navbar = ({ active }) => {
                         <img alt='' src='/bookA.png' />
                         {active === 'new' && <div className='point active'></div>}
                     </div>
-                    <div onClick={(e) => router.push('/patient/appointment/setting')} className=''>
+                    <div onClick={(e) => router.push('/patient/setting')} className=''>
                         <img alt='' src='/setting.png' />
                         {active === 'setting' && <div className='point active'></div>}
                     </div>

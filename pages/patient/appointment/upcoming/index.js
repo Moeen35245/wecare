@@ -15,6 +15,7 @@ const Container = styled.div`
     background-color: #fefae0;
     color: #023047;
     padding-top: 60px;
+    padding-bottom: 80px;
 `;
 
 const AppointmentContainer = styled.div`
@@ -23,7 +24,7 @@ const AppointmentContainer = styled.div`
 
 const AppointmentDiv = styled.div`
     border: 1px solid #023047;
-    padding: 10px 10px;
+    padding: 0px 10px 10px 10px;
     border-radius: 13px / 15px;
 
     & .span {
@@ -37,7 +38,7 @@ const AppointmentDiv = styled.div`
 `;
 
 const Popup = styled.div`
-    position: absolute;
+    position: fixed;
     top: 7%;
     left: 50%;
     transform: translateX(-50%);
@@ -118,6 +119,26 @@ const Button = styled.button`
     }
 `;
 
+const CardHeader = styled(FlexContainer)`
+    align-items: center;
+
+    & img {
+        width: 100px;
+    }
+
+    & > h4 {
+        max-width: 170px;
+        font-size: 20px;
+    }
+`;
+
+const Hr = styled.div`
+    width: 100%;
+    height: 1px;
+    background-color: #023047;
+    margin-bottom: 10px;
+`;
+
 const getImage = (name) => {
     if (name === 'Greenleaf Hospital') {
         return '/Greenleaf.png';
@@ -142,6 +163,7 @@ const PopupModel = ({ data, setIsPopupOpen }) => {
             <div className='img--container'>
                 <img alt='' src={getImage(data.hospital)} />
             </div>
+
             <div className='data--container'>
                 <p>
                     Scheduled on: <span className='span'>{getDate(data.date)}</span>{' '}
@@ -181,6 +203,13 @@ const UpComing = ({ data }) => {
                                 key={i}
                             >
                                 <AppointmentDiv>
+                                    <CardHeader justify='space-between'>
+                                        <h4>{item.hospital}</h4>
+                                        <div>
+                                            <img alt='' src={getImage(item.hospital)} />
+                                        </div>
+                                    </CardHeader>
+                                    <Hr></Hr>
                                     <FlexContainer justify='space-between'>
                                         <div>
                                             <p>
@@ -193,9 +222,6 @@ const UpComing = ({ data }) => {
                                                 Appointment Type: <span className='span'>{item.type}</span>
                                             </p>
                                         </div>
-                                        <div>
-                                            <img alt='' src={getImage(item.hospital)} />
-                                        </div>
                                     </FlexContainer>
                                 </AppointmentDiv>
                             </AppointmentContainer>
@@ -204,7 +230,7 @@ const UpComing = ({ data }) => {
                         <FlexContainer justify='center'>
                             <div style={{ textAlign: 'center' }}>
                                 <p>Uh oh!</p>
-                                <p>You have no previous appointments.</p>
+                                <p>You have no up-coming appointments.</p>
                             </div>
                         </FlexContainer>
                     )}

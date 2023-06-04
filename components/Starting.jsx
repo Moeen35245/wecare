@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { MobileContainer } from './Container.styled';
 import { useRouter } from 'next/router';
+
 // import Image from 'next/image';
 
 const Container = styled.div`
@@ -14,6 +15,7 @@ const Container = styled.div`
     color: #fff;
     padding: 10px;
     position: relative;
+    /* overflow: hidden; */
 
     & h1 {
         text-align: center;
@@ -39,6 +41,8 @@ const Container = styled.div`
         height: 35%;
         width: 100%;
         background-color: #fff;
+        /* background: rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(5px); */
         border-top-right-radius: 30px;
         border-top-left-radius: 30px;
         position: absolute;
@@ -76,11 +80,11 @@ const Container = styled.div`
             background-color: transparent;
             border: 2px solid #1554f6;
             color: #1554f6;
-            border-radius: 0.6em;
+            border-radius: 10px / 13px;
             cursor: pointer;
             display: flex;
             align-self: center;
-            font-size: 1rem;
+            font-size: 14px;
             font-weight: 400;
             line-height: 1;
             margin: 20px;

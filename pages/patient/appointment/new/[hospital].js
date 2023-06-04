@@ -7,6 +7,8 @@ import { useState } from 'react';
 import axios from 'axios';
 import { hostName } from '../../../../helper/configue';
 import Loader from '../../../../components/Loader';
+import { toast } from 'react-toastify';
+import { toastConfig } from '../../../../helper/toastify';
 
 const Container = styled.div`
     min-height: 100%;
@@ -209,6 +211,19 @@ const BookAppointment = ({ name }) => {
 
     const submitHandler = (e) => {
         e.preventDefault();
+
+        if (!time || !date || !type || !reason) {
+            toast.error('All Fields Required', toastConfig());
+            return;
+        }
+
+        const today = new Date();
+        const currDate = new Date(date);
+
+        if (currDate < today) {
+            toast.error('past dates not allowed', toastConfig());
+            return;
+        }
         setIsLoading(true);
         const { email, token } = nookies.get();
 
@@ -233,10 +248,14 @@ const BookAppointment = ({ name }) => {
             .then((res) => {
                 console.log(res.data);
                 if (res.status === 201) {
+                    toast.success('Appointment booked', toastConfig());
                     setIsPopupOpen(false);
                 }
             })
-            .catch((err) => console.log('something went wrong', err))
+            .catch((err) => {
+                toast.error('Something went wrong', toastConfig());
+                console.log('something went wrong', err);
+            })
             .finally(() => {
                 setIsLoading(false);
             });

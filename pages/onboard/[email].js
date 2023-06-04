@@ -7,6 +7,9 @@ import axios from 'axios';
 import { hostName } from '../../helper/configue';
 import nookies from 'nookies';
 import Loader from '../../components/Loader';
+import { toast } from 'react-toastify';
+import { toastConfig } from '../../helper/toastify';
+import { checkValue } from '../../helper/regex';
 
 const LoginContainer = styled.div`
     padding: 30px;
@@ -15,7 +18,7 @@ const LoginContainer = styled.div`
     /* position: absolute; */
     /* left: 0;
     bottom: 0; */
-    height: 100%;
+    min-height: 100vh;
     width: 100%;
     /* border-top-right-radius: 40px;
     border-top-left-radius: 40px;
@@ -150,13 +153,26 @@ const OnBoard = () => {
     const [address, setAddress] = useState('');
     const [gender, setGender] = useState('');
     const [DOB, setDOB] = useState('');
-    const [otp, setOtp] = useState('');
     const [isLoading, setIsLoading] = useState(false);
     const submitHandler = (e) => {
         e.preventDefault();
+
+        if (!fName || !lName || !phone || !ePhone || !address || !gender || !DOB) {
+            toast.error('All Feilds are required', toastConfig());
+            return;
+        }
+
+        if (phone.length !== 10) {
+            toast.error('enter correct phone no.', toastConfig());
+            return;
+        }
+
+        if (ePhone.length !== 10) {
+            toast.error('enter correct alternate no.', toastConfig());
+            return;
+        }
         setIsLoading(true);
         const { email, token } = nookies.get();
-
         axios
             .post(
                 `${hostName}/users/add_user`,
@@ -179,10 +195,14 @@ const OnBoard = () => {
             .then((res) => {
                 console.log(res);
                 if (res.status === 201) {
+                    toast.success("User's Detail Added", toastConfig());
                     router.push('/patient/appointment/new');
                 }
             })
-            .catch((err) => console.log('something went wrong', err))
+            .catch((err) => {
+                toast.error('Something went wrong', toastConfig());
+                console.log('something went wrong', err);
+            })
             .finally(() => {
                 setIsLoading(false);
             });
@@ -195,13 +215,15 @@ const OnBoard = () => {
                     <form className='form'>
                         <FlexContainer gap='15px' justify='space-between'>
                             <div className='form--group'>
-                                <Label>First Name</Label>
+                                <Label>First Name :</Label>
                                 <div className='input--group'>
                                     {/* <FiMail className='icon' /> */}
                                     <Input
                                         value={fName}
                                         onChange={(e) => {
-                                            setFName(e.target.value);
+                                            if (checkValue(e.target.value, '^[A-z]*$')) {
+                                                setFName(e.target.value);
+                                            }
                                         }}
                                         placeholder='First Name'
                                         type='text'
@@ -209,13 +231,15 @@ const OnBoard = () => {
                                 </div>
                             </div>
                             <div className='form--group'>
-                                <Label>Last Name</Label>
+                                <Label>Last Name :</Label>
                                 <div className='input--group'>
                                     {/* <FiMail className='icon' /> */}
                                     <Input
                                         value={lName}
                                         onChange={(e) => {
-                                            setLName(e.target.value);
+                                            if (checkValue(e.target.value, '^[A-z]*$')) {
+                                                setLName(e.target.value);
+                                            }
                                         }}
                                         placeholder='Last Name'
                                         type='text'
@@ -224,13 +248,15 @@ const OnBoard = () => {
                             </div>
                         </FlexContainer>
                         <div className='form--group'>
-                            <Label>Phone No.</Label>
+                            <Label>Phone No. :</Label>
                             <div className='input--group'>
                                 {/* <FiMail className='icon' /> */}
                                 <Input
                                     value={phone}
                                     onChange={(e) => {
-                                        setPhone(e.target.value);
+                                        if (checkValue(e.target.value, '^[0-9]*$')) {
+                                            setPhone(e.target.value);
+                                        }
                                     }}
                                     placeholder='Phone No.'
                                     type='text'
@@ -238,13 +264,15 @@ const OnBoard = () => {
                             </div>
                         </div>
                         <div className='form--group'>
-                            <Label>Emergency No.</Label>
+                            <Label>Emergency No. :</Label>
                             <div className='input--group'>
                                 {/* <FiMail className='icon' /> */}
                                 <Input
                                     value={ePhone}
                                     onChange={(e) => {
-                                        setEPhone(e.target.value);
+                                        if (checkValue(e.target.value, '^[0-9]*$')) {
+                                            setEPhone(e.target.value);
+                                        }
                                     }}
                                     placeholder='Emergency No.'
                                     type='text'
@@ -253,7 +281,7 @@ const OnBoard = () => {
                         </div>
                         <FlexContainer gap='15px' justify='space-between'>
                             <div className='form--group'>
-                                <Label>Gender</Label>
+                                <Label>Gender :</Label>
                                 <div className='input--group'>
                                     {/* <FiMail className='icon' /> */}
                                     <Select
@@ -269,7 +297,7 @@ const OnBoard = () => {
                                 </div>
                             </div>
                             <div className='form--group'>
-                                <Label>DOB</Label>
+                                <Label>DOB :</Label>
                                 <div className='input--group'>
                                     {/* <FiMail className='icon' /> */}
                                     <Input
@@ -285,7 +313,7 @@ const OnBoard = () => {
                             </div>
                         </FlexContainer>
                         <div className='form--group'>
-                            <Label>Address</Label>
+                            <Label>Address :</Label>
                             <div className='input--group'>
                                 <Textarea
                                     value={address}

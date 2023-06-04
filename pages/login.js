@@ -7,6 +7,8 @@ import axios from 'axios';
 import { hostName } from '../helper/configue';
 import nookies, { setCookie, destroyCookie } from 'nookies';
 import Loader from '../components/Loader';
+import { toast } from 'react-toastify';
+import { toastConfig } from '../helper/toastify';
 
 const Container = styled.div`
     min-height: 600px;
@@ -116,10 +118,25 @@ const Auth = () => {
 
     const submitHandler = (e) => {
         e.preventDefault();
-        setIsLoading(true);
-        // console.log('clicked');
+        if (!email || !password) {
+            toast.error('All fields required', toastConfig());
+            return;
+        }
 
-        // router.push('/onboard');
+        // const re = /^[w-.]+@([w-]+.)+[w-]{2,4}$/;
+        // if (re.test(email)) {
+        //     toast.error('Email X', toastConfig());
+        //     return;
+        // }
+
+        // if(password.length<4)
+        // {
+        //     toast.error('All fields required', toastConfig());
+        //     return;
+        // }
+
+        setIsLoading(true);
+
         axios
             .post(
                 `${hostName}/users/login`,
@@ -129,6 +146,7 @@ const Auth = () => {
             .then((res) => {
                 console.log(res.data.token);
                 if (res.status === 200) {
+                    toast.success('Login Successfully', toastConfig());
                     destroyCookie(null, 'token');
                     destroyCookie(null, 'email');
                     setCookie(null, 'token', res.data.token);
@@ -136,6 +154,7 @@ const Auth = () => {
                     router.push(`/onboard/${email}`);
                 }
             })
+            .catch((err) => toast.error('Incorrect Credentials', toastConfig()))
             .finally(() => {
                 setIsLoading(false);
             });
